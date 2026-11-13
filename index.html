@@ -1,0 +1,854 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alitas Vale Vale | Pide aquí</title>
+
+<style>
+:root {
+  --paper: #f7f7f5;
+  --ink: #171717;
+  --muted: #777;
+  --yellow: #ffd629;
+  --line: #e9e9e5;
+  --green: #20b85a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+header {
+  background: var(--ink);
+  color: white;
+  padding: 15px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 45px;
+  height: 45px;
+  background: var(--yellow);
+  color: var(--ink);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.brand h1 {
+  font-size: 19px;
+}
+
+.brand p {
+  font-size: 11px;
+  color: #ccc;
+  margin-top: 3px;
+}
+
+.cart-button {
+  background: var(--yellow);
+  border: none;
+  padding: 12px 17px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hero {
+  background: linear-gradient(120deg, #171717, #393939);
+  color: white;
+  padding: 55px 7%;
+  min-height: 240px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero h2 {
+  font-size: clamp(28px, 5vw, 45px);
+  margin-bottom: 12px;
+}
+
+.hero p {
+  color: #ddd;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.hero-food {
+  font-size: 75px;
+}
+
+main {
+  width: 90%;
+  max-width: 1150px;
+  margin: 35px auto;
+}
+
+.section-title {
+  margin-bottom: 18px;
+}
+
+.section-title h2 {
+  font-size: 25px;
+}
+
+.section-title p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.search {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  font-size: 15px;
+  margin-bottom: 17px;
+  outline: none;
+}
+
+.search:focus {
+  border-color: #d4aa00;
+}
+
+.categories {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding-bottom: 18px;
+}
+
+.category {
+  border: 1px solid var(--line);
+  background: white;
+  padding: 10px 17px;
+  border-radius: 25px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.category.active {
+  background: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.product {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.product-image {
+  height: 135px;
+  background: #fff6d4;
+  display: grid;
+  place-items: center;
+  font-size: 65px;
+}
+
+.product-info {
+  padding: 16px;
+}
+
+.product-info h3 {
+  font-size: 17px;
+  margin-bottom: 7px;
+}
+
+.product-info p {
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 34px;
+  line-height: 1.4;
+}
+
+.price {
+  font-weight: bold;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+.add-button {
+  width: 100%;
+  border: none;
+  background: var(--yellow);
+  padding: 12px;
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-button:hover,
+.cart-button:hover {
+  filter: brightness(.95);
+}
+
+.notice {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 25px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+footer {
+  background: var(--ink);
+  color: white;
+  text-align: center;
+  padding: 25px;
+  margin-top: 45px;
+  font-size: 13px;
+}
+
+/* Carrito */
+.cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 20;
+}
+
+.cart-overlay.show {
+  display: block;
+}
+
+.cart-panel {
+  background: white;
+  width: 100%;
+  max-width: 470px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-cart {
+  border: none;
+  background: #eee;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.empty-cart {
+  color: var(--muted);
+  text-align: center;
+  padding: 30px 5px;
+}
+
+.cart-item {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cart-item h4 {
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity button {
+  width: 27px;
+  height: 27px;
+  border: none;
+  border-radius: 7px;
+  background: var(--yellow);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cart-form {
+  margin-top: 22px;
+}
+
+.cart-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 14px 0 6px;
+}
+
+.cart-form input,
+.cart-form select,
+.cart-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font: inherit;
+  background: white;
+}
+
+.cart-form textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
+.whatsapp-button {
+  width: 100%;
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+@media(max-width: 750px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .product-image {
+    height: 110px;
+    font-size: 53px;
+  }
+
+  .product-info {
+    padding: 12px;
+  }
+
+  .hero {
+    padding: 38px 6%;
+  }
+
+  .hero-food {
+    font-size: 55px;
+  }
+}
+
+@media(max-width: 380px) {
+  .products {
+    grid-template-columns: 1fr;
+  }
+
+  .brand h1 {
+    font-size: 16px;
+  }
+
+  .cart-button {
+    padding: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">AV</div>
+    <div>
+      <h1>Alitas Vale Vale</h1>
+      <p>Algo rico te está esperando 🍗</p>
+    </div>
+  </div>
+
+  <button class="cart-button" onclick="openCart()">
+    🛒 Carrito (<span id="cart-count">0</span>)
+  </button>
+</header>
+
+<section class="hero">
+  <div>
+    <h2>¡Buen sabor, mejor momento!</h2>
+    <p>Disfruta nuestros platos favoritos. Elige lo que más te guste y realiza tu pedido directamente por WhatsApp.</p>
+  </div>
+  <div class="hero-food">🍗🍟</div>
+</section>
+
+<main>
+  <div class="section-title">
+    <h2>Nuestro menú</h2>
+    <p>Encuentra tu favorito y agrégalo al carrito.</p>
+  </div>
+
+  <input
+    type="search"
+    class="search"
+    id="search"
+    placeholder="🔎 Buscar un plato..."
+    oninput="renderProducts()"
+  >
+
+  <div class="categories" id="categories"></div>
+
+  <div class="products" id="products"></div>
+
+  <div class="notice">
+    <strong>¡Estamos preparando nuestro menú!</strong><br>
+    Consulta los precios y la disponibilidad al realizar tu pedido.
+  </div>
+</main>
+
+<footer>
+  ALITAS VALE VALE · Hecho para disfrutar 🍟
+</footer>
+
+<!-- VENTANA DEL CARRITO -->
+<div class="cart-overlay" id="cart-overlay" onclick="overlayClick(event)">
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h2>Tu pedido 🛒</h2>
+      <button class="close-cart" onclick="closeCart()">×</button>
+    </div>
+
+    <div id="cart-items"></div>
+
+    <div class="cart-form">
+      <label for="customer-name">Tu nombre</label>
+      <input id="customer-name" type="text" placeholder="Escribe tu nombre">
+
+      <label for="order-mode">¿Cómo deseas recibir tu pedido?</label>
+      <select id="order-mode" onchange="updateDeliveryField()">
+        <option value="Comer en el local">Comer en el local</option>
+        <option value="Recoger mi pedido">Recoger mi pedido</option>
+        <option value="Delivery (por confirmar)">Delivery (por confirmar)</option>
+      </select>
+
+      <div id="delivery-field" style="display:none">
+        <label for="customer-address">Dirección de entrega</label>
+        <input id="customer-address" type="text" placeholder="Escribe tu dirección">
+
+        <label for="customer-reference">Referencia</label>
+        <input id="customer-reference" type="text" placeholder="Ejemplo: cerca del parque">
+      </div>
+
+      <label for="customer-note">Nota adicional (opcional)</label>
+      <textarea id="customer-note" placeholder="¿Alguna indicación para tu pedido?"></textarea>
+
+      <button class="whatsapp-button" onclick="sendOrder()">
+        📲 Enviar pedido por WhatsApp
+      </button>
+
+      <p class="small-note">
+        Los precios y la disponibilidad se confirmarán por WhatsApp.
+        El delivery está sujeto a confirmación.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// NÚMERO DE WHATSAPP DEL NEGOCIO
+const WHATSAPP_NUMBER = "51983156773";
+
+// PRODUCTOS DEL MENÚ ANTERIOR
+const productsData = [
+  {
+    id: 1,
+    name: "Ala broaster",
+    category: "Broaster",
+    description: "Presa de pollo crocante.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 2,
+    name: "Muslo broaster",
+    category: "Broaster",
+    description: "Presa de pollo crocante.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 3,
+    name: "Encuentro broaster",
+    category: "Broaster",
+    description: "Presa de pollo crocante.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 4,
+    name: "Pecho broaster",
+    category: "Broaster",
+    description: "Presa de pollo crocante.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 5,
+    name: "Salchipapa",
+    category: "Salchis",
+    description: "Papas fritas con salchicha.",
+    emoji: "🍟",
+    price: null
+  },
+  {
+    id: 6,
+    name: "Salchi crispy",
+    category: "Salchis",
+    description: "Una combinación crocante.",
+    emoji: "🍟",
+    price: null
+  },
+  {
+    id: 7,
+    name: "Salchi pollo",
+    category: "Salchis",
+    description: "Salchipapa con pollo.",
+    emoji: "🍟",
+    price: null
+  },
+  {
+    id: 8,
+    name: "Hamburguesa clásica",
+    category: "Hamburguesas",
+    description: "Una opción para disfrutar.",
+    emoji: "🍔",
+    price: null
+  },
+  {
+    id: 9,
+    name: "Hamburguesa especial",
+    category: "Hamburguesas",
+    description: "Consulta los ingredientes.",
+    emoji: "🍔",
+    price: null
+  },
+  {
+    id: 10,
+    name: "Alitas BBQ",
+    category: "Alitas",
+    description: "Alitas con salsa BBQ.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 11,
+    name: "Alitas acevichadas",
+    category: "Alitas",
+    description: "Alitas con salsa acevichada.",
+    emoji: "🍗",
+    price: null
+  },
+  {
+    id: 12,
+    name: "Alitas búfalo",
+    category: "Alitas",
+    description: "Alitas con salsa búfalo.",
+    emoji: "🍗",
+    price: null
+  }
+];
+
+let selectedCategory = "Todos";
+let cart = [];
+
+const categoryNames = [
+  "Todos",
+  "Broaster",
+  "Salchis",
+  "Hamburguesas",
+  "Alitas"
+];
+
+// MOSTRAR CATEGORÍAS
+function renderCategories() {
+  const container = document.getElementById("categories");
+
+  container.innerHTML = categoryNames.map(category => `
+    <button
+      class="category ${selectedCategory === category ? "active" : ""}"
+      onclick="selectCategory('${category}')"
+    >
+      ${category}
+    </button>
+  `).join("");
+}
+
+function selectCategory(category) {
+  selectedCategory = category;
+  renderCategories();
+  renderProducts();
+}
+
+// MOSTRAR PLATOS
+function renderProducts() {
+  const container = document.getElementById("products");
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = productsData.filter(product => {
+    const matchesCategory =
+      selectedCategory === "Todos" ||
+      product.category === selectedCategory;
+
+    const matchesSearch =
+      product.name.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = "<p>No encontramos ese plato.</p>";
+    return;
+  }
+
+  container.innerHTML = filtered.map(product => `
+    <article class="product">
+      <div class="product-image">${product.emoji}</div>
+
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+
+        <div class="price">
+          ${product.price === null
+            ? "Precio por confirmar"
+            : "S/ " + product.price.toFixed(2)}
+        </div>
+
+        <button
+          class="add-button"
+          onclick="addToCart(${product.id})"
+        >
+          + Agregar
+        </button>
+      </div>
+    </article>
+  `).join("");
+}
+
+// AGREGAR AL CARRITO
+function addToCart(id) {
+  const product = productsData.find(item => item.id === id);
+  const existing = cart.find(item => item.id === id);
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      ...product,
+      quantity: 1
+    });
+  }
+
+  updateCart();
+}
+
+// CAMBIAR CANTIDAD
+function changeQuantity(id, amount) {
+  const item = cart.find(product => product.id === id);
+
+  if (!item) return;
+
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+    cart = cart.filter(product => product.id !== id);
+  }
+
+  updateCart();
+}
+
+// ACTUALIZAR CARRITO
+function updateCart() {
+  const count = cart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  document.getElementById("cart-count").textContent = count;
+
+  const container = document.getElementById("cart-items");
+
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div style="font-size:45px">🛒</div>
+        <p>Tu carrito está vacío.</p>
+        <p>Agrega algo rico de nuestro menú.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div>
+        <h4>${item.emoji} ${item.name}</h4>
+        <small>${item.price === null
+          ? "Precio por confirmar"
+          : "S/ " + item.price.toFixed(2)}</small>
+      </div>
+
+      <div class="quantity">
+        <button onclick="changeQuantity(${item.id}, -1)">−</button>
+        <strong>${item.quantity}</strong>
+        <button onclick="changeQuantity(${item.id}, 1)">+</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ABRIR Y CERRAR CARRITO
+function openCart() {
+  document.getElementById("cart-overlay").classList.add("show");
+  updateCart();
+}
+
+function closeCart() {
+  document.getElementById("cart-overlay").classList.remove("show");
+}
+
+function overlayClick(event) {
+  if (event.target.id === "cart-overlay") {
+    closeCart();
+  }
+}
+
+// MOSTRAR DIRECCIÓN SI ES DELIVERY
+function updateDeliveryField() {
+  const mode = document.getElementById("order-mode").value;
+  const field = document.getElementById("delivery-field");
+
+  field.style.display =
+    mode === "Delivery (por confirmar)" ? "block" : "none";
+}
+
+// ENVIAR PEDIDO A WHATSAPP
+function sendOrder() {
+  if (cart.length === 0) {
+    alert("Primero agrega productos a tu carrito.");
+    return;
+  }
+
+  const name =
+    document.getElementById("customer-name").value.trim();
+
+  const mode =
+    document.getElementById("order-mode").value;
+
+  const address =
+    document.getElementById("customer-address").value.trim();
+
+  const reference =
+    document.getElementById("customer-reference").value.trim();
+
+  const note =
+    document.getElementById("customer-note").value.trim();
+
+  if (!name) {
+    alert("Por favor, escribe tu nombre.");
+    return;
+  }
+
+  if (mode === "Delivery (por confirmar)" && !address) {
+    alert("Por favor, escribe tu dirección.");
+    return;
+  }
+
+  let message = "¡Hola, Alitas Vale Vale! 🍗\n";
+  message += "Quiero realizar el siguiente pedido:\n\n";
+
+  cart.forEach(item => {
+    message += `${item.quantity} x ${item.name}\n`;
+  });
+
+  message += "\n";
+  message += `Nombre: ${name}\n`;
+  message += `Modalidad: ${mode}\n`;
+
+  if (mode === "Delivery (por confirmar)") {
+    message += `Dirección: ${address}\n`;
+
+    if (reference) {
+      message += `Referencia: ${reference}\n`;
+    }
+  }
+
+  if (note) {
+    message += `Nota: ${note}\n`;
+  }
+
+  message += "\nPor favor, confirmen el precio y la disponibilidad. ¡Gracias!";
+
+  const whatsappURL =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    encodeURIComponent(message);
+
+  window.open(whatsappURL, "_blank");
+}
+
+// INICIAR PÁGINA
+renderCategories();
+renderProducts();
+updateCart();
+</script>
+
+</body>
+  </html>
+  
